@@ -5,10 +5,25 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// Azure awesomeness
+var AzureMedia = require('azure-media');
+var azureConfig = require('./azureconfig.json');
+azureMedia = new AzureMedia(azureConfig);
+
+azureMedia.init(function(err) {
+    if(err)
+        console.log(err);
+    else
+        console.log('Azure Media API initialized');
+});
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+// Icky globals
+var BASE_CDN = "http://az751424.vo.msecnd.net/";
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

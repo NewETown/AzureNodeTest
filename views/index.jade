@@ -4,3 +4,56 @@ block content
   h1= title
   p Welcome to #{title} (nobody likes you Express, go home)
   p This is some extra text
+  
+  
+  h2 Upload Test
+  form(id='uploadForm', method='post', action='/upload', enctype='multipart/form-data')
+    input(type='file', id='fileField', name='theFile')
+    input(type='submit', id='uploadButton', value='Upload Image', name='submit')
+    input(type='text', id='fileName')
+    
+  script(src='http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js')
+  script.
+    $(function() {
+        var form = document.getElementById('uploadForm');
+        var fileSelect = document.getElementById('fileField');
+        var uploadButton = document.getElementById('uploadButton');
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            
+            // Update button text
+            uploadButton.innerHTML = 'Uploading...';
+            
+            var files = fileSelect.files;
+            var formData = new FormData();
+            
+            console.log(files);
+            
+            var file = files[0];
+            
+            var fileName = $('#fileName').val().trim();
+            
+            if(fileName === '') {
+                fileName = file.name;
+            }
+                
+            formData.append('theFile', file, fileName);
+            var xhr = new XMLHttpRequest();
+            
+            xhr.open('POST', '/upload', true);
+            
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    uploadButton.innerHTML = 'Upload';
+                    $('#fileField').val('');
+                    $('#fileName').val('');
+                    console.log('Done uploading');
+                } else {
+                    alert('An error occurred!');
+                }
+            };
+            
+            xhr.send(formData);
+        };
+    });
+    
