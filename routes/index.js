@@ -71,7 +71,7 @@ function buildAssetFile(data) {
     
     azureMedia.rest.assetfile.create(assetData, function(err, assetfile) {
         if (err) {
-            console.log(err);
+            console.log("assetfile.create: " + err);
         } else {
             console.log('Created Asset File');
             var assetFileData = {
@@ -95,7 +95,7 @@ function buildAccessPolicy(data) {
     
     azureMedia.rest.accesspolicy.findOrCreate(data.DurationInMinutes, data.Permissions, function(err, accesspolicy_model) {
         if (err) {
-            console.log(err);
+            console.log("accesspolicy.findOrCreate: " + err);
         } else {
             console.log('Created Asset Policy');
             accesspolicy_model.AssetId = data.AssetId;
@@ -132,7 +132,7 @@ function buildLocator(data) {
     
     azureMedia.rest.locator.create(locatorData, function(err, model) {
         if(err) {
-            console.log(err);
+            console.log("locator.create: " + err);
         } else {
             console.log('Created locator');
             var path = model.BaseUri + '/' + data.FileName;
@@ -141,11 +141,10 @@ function buildLocator(data) {
             
             blobService.createBlockBlobFromStream(container, data.FileName, data.Part, data.Size, function(err, blob) {
                 if(err) {
-                    console.log(err);
+                    console.log("blobService.createBlockBlobFromStream: " + err);
                 } else {
                     console.log('Done uploading');
                     var assetFileUpdate = {
-//                        Id: _assetFileId, 
                         ContentFileSize: _size,
                         MimeType: _mimeType,
                         Name: _name,
@@ -154,19 +153,19 @@ function buildLocator(data) {
                     
                     azureMedia.rest.assetfile.update(_assetFileId, assetFileUpdate, function(err, assetfile) {
                         if(err)
-                            console.log(err);
+                            console.log("assetfile.update: " + err);
                         else
                             console.log('Asset file updated successfully');
                     });
                     
                     azureMedia.rest.locator.delete(model.Id, function(err) {
                         if(err) {
-                            console.log(err);
+                            console.log("locator.delete: " + err);
                         } else {
                             console.log('Locator deleted successfully');
                             azureMedia.rest.accesspolicy.delete(_accessPolicyId, function(err) {
                                 if(err)
-                                    console.log(err);
+                                    console.log("accesspolicy.delete: " + err);
                                 else
                                     console.log('Access Policty deleted successfully');
                             });
